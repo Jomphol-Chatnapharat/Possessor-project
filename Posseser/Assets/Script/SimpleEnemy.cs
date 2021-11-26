@@ -5,18 +5,33 @@ using UnityEngine;
 public class SimpleEnemy : MonoBehaviour
 {
     public Rigidbody2D playerRb;
+    public EnemyAI AI;
     public float moveSpeed = 1f;
     public float maxSpeed = 5;
 
     public bool isBeingControl = false;
+    public bool isStun;
+    public float stunTime;
+
+    public float maxHP;
+    public float currentHP;
+
+    //private GameObject PlayerMain;
+
 
     // Start is called before the first frame update
-    public void Awake()
+    //public void Awake()
+    //{
+    //    playerRb = GetComponent<Rigidbody2D>();
+    //}
+
+    private void Start()
     {
-        playerRb = GetComponent<Rigidbody2D>();
+            AI = GetComponent<EnemyAI>();
+
+        currentHP = maxHP;
     }
 
-    // Update is called once per frame
     private void FixedUpdate()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -26,7 +41,24 @@ public class SimpleEnemy : MonoBehaviour
 
         if (isBeingControl == true)
         {
+            playerRb = GetComponent<Rigidbody2D>();
+            AI.enabled = false;
             SimpleMovement();
+        }
+
+        if (currentHP <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public void PlayerOut()
+    {
+        if (!isStun)
+        {
+            isStun = true;
+            transform.position = transform.position;
+            Invoke(nameof(ResetStun), stunTime);
         }
     }
 
@@ -41,6 +73,14 @@ public class SimpleEnemy : MonoBehaviour
         Vector2 force = new Vector2(xForce, yForce);
 
         playerRb.AddForce(force);
+    }
+
+    void ResetStun()
+    {
+        Debug.Log("reset stun");
+
+        isStun = false;
+        AI.enabled = true;
     }
 
     void SimpleMovement()
@@ -60,5 +100,9 @@ public class SimpleEnemy : MonoBehaviour
         {
             playerRb.velocity = Vector2.zero;
         }
+
+        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 }

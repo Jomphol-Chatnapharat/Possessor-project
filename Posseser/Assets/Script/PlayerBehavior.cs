@@ -10,10 +10,20 @@ public class PlayerBehavior : MonoBehaviour
     public float maxSpeed = 5;
 
     private bool isControlling = true;
-    // Start is called before the first frame update
+
+    private Camera mainCamera;
+
     public void Awake()
     {
         playerRb = GetComponent<Rigidbody2D>();
+        mainCamera = FindObjectOfType<Camera>();
+    }
+
+    private void Update()
+    {
+        var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     // Update is called once per frame
