@@ -30,6 +30,8 @@ public class PlayerStats : MonoBehaviour
         if (currentHp <= 0)
         {
             Destroy(Player.gameObject);
+
+            RestartLevel();
         }
 
         if (currentHp > maxHp)
@@ -49,5 +51,10 @@ public class PlayerStats : MonoBehaviour
     public void SetHealthImageAmount(float newAmount)
     {
         hpBar.fillAmount = newAmount;
+    }
+
+    void RestartLevel()
+    {
+        SceneManager.LoadScene("GameLevel");
     }
 }
